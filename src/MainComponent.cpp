@@ -16,6 +16,8 @@ MainComponent::MainComponent()
     setSize (600, 400);
 
     setAudioChannels (2, 2);
+
+    deviceManager.addChangeListener (this);
 }
 
 
@@ -72,4 +74,12 @@ void MainComponent::resized()
 {
     auto rect = getLocalBounds();
     audioSetupComp.setBounds(rect);
+}
+
+
+void MainComponent::changeListenerCallback(juce::ChangeBroadcaster*)
+{
+    juce::AudioDeviceManager::AudioDeviceSetup currentAudioSetup;
+    deviceManager.getAudioDeviceSetup(currentAudioSetup);
+    bTrack.updateHopAndFrameSize(currentAudioSetup.bufferSize / 2, currentAudioSetup.bufferSize);
 }

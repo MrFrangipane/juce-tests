@@ -19,6 +19,7 @@ tbw
 - https://github.com/FundamentalFrequency/LMN-3-DAW/blob/main/CMakeLists.txt
 - https://github.com/FundamentalFrequency/LMN-3-DAW
 - https://github.com/eyalamirmusic/JUCECmakeRepoPrototype/tree/master/Apps/AudioAppTemplate/Source
+- https://stackoverflow.com/questions/38022700/cmake-doesnt-include-header-directory-of-submodule-a-within-submodule-b
 
 #### Forums
 

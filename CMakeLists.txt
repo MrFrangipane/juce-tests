@@ -6,6 +6,32 @@ set(PROJECT_NAME "FrangiTest")
 
 project(${PROJECT_NAME} VERSION 0.0.0)
 
+# BTrack
+add_subdirectory(3rd-party/libsamplerate libsamplerate)
+add_subdirectory(3rd-party/BTrack btrack)
+include_directories(3rd-party/libsamplerate/include)
+include_directories(3rd-party/libsamplerate/src)
+include_directories(3rd-party/BTrack/libs/kiss_fft130)
+include_directories(3rd-party/BTrack/src)
+add_library(kiss_fft
+        3rd-party/BTrack/libs/kiss_fft130/_kiss_fft_guts.h
+        3rd-party/BTrack/libs/kiss_fft130/kiss_fft.c
+        3rd-party/BTrack/libs/kiss_fft130/kiss_fft.h
+        3rd-party/BTrack/libs/kiss_fft130/kissfft.hh
+)
+add_library(libsamplerate
+        3rd-party/libsamplerate/src/common.h
+        3rd-party/libsamplerate/src/fastest_coeffs.h
+        3rd-party/libsamplerate/src/high_qual_coeffs.h
+        3rd-party/libsamplerate/src/mid_qual_coeffs.h
+        3rd-party/libsamplerate/src/samplerate.c
+        3rd-party/libsamplerate/src/src_linear.c
+        3rd-party/libsamplerate/src/src_sinc.c
+        3rd-party/libsamplerate/src/src_zoh.c
+        3rd-party/libsamplerate/include/samplerate.h
+)
+
+# JUCE
 add_subdirectory($ENV{JUCE_PATH} juce)
 
 juce_add_gui_app(${PROJECT_NAME}
@@ -30,6 +56,9 @@ target_compile_definitions(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
+        libsamplerate
+        kiss_fft
+        BTrack
         juce::juce_audio_utils
         juce::juce_gui_extra
         PUBLIC
