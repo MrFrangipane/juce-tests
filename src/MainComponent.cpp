@@ -1,25 +1,75 @@
 #include "MainComponent.h"
 
-//==============================================================================
+
 MainComponent::MainComponent()
+: audioSetupComp (deviceManager,
+                  0,
+                  256,
+                  0,
+                  256,
+                  false,
+                  false,
+                  false,
+                  false)
 {
+    addAndMakeVisible (audioSetupComp);
     setSize (600, 400);
+
+    setAudioChannels (2, 2);
 }
 
-//==============================================================================
+
+MainComponent::~MainComponent()
+{
+    shutdownAudio();
+}
+
+
+void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
+{
+    auto* device = deviceManager.getCurrentAudioDevice();
+    auto activeInputChannels = device->getActiveInputChannels();
+    auto activeOutputChannels = device->getActiveOutputChannels();
+    auto maxInputChannels = activeInputChannels.getHighestBit() + 1;
+    auto maxOutputChannels = activeOutputChannels.getHighestBit() + 1;
+
+    for (auto channel = 0; channel < maxOutputChannels; ++channel)
+    {
+        if ((!activeOutputChannels[channel]) || maxInputChannels == 0)
+        {
+            bufferToFill.buffer->clear (channel, bufferToFill.startSample, bufferToFill.numSamples);
+        }
+        else
+        {
+            auto actualInputChannel = channel % maxInputChannels;
+
+            if (!activeInputChannels[channel])
+            {
+                bufferToFill.buffer->clear (channel, bufferToFill.startSample, bufferToFill.numSamples);
+            }
+            else
+            {
+                auto* inBuffer = bufferToFill.buffer->getReadPointer(actualInputChannel, bufferToFill.startSample);
+                auto* outBuffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
+
+                for (auto sample = 0; sample < bufferToFill.numSamples; ++sample)
+                {
+                    outBuffer[sample] = inBuffer[sample];
+                }
+            }
+        }
+    }
+}
+
+
 void MainComponent::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setFont (juce::Font (16.0f));
-    g.setColour (juce::Colours::white);
-    g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
 }
+
 
 void MainComponent::resized()
 {
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+    auto rect = getLocalBounds();
+    audioSetupComp.setBounds(rect);
 }
