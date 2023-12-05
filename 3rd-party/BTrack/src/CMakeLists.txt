@@ -1,0 +1,21 @@
+# Find libsamplerate
+#find_library(LIBSAMPLERATE_LIBRARIES NAMES samplerate)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../libsamplerate/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../BTrack/libs/kiss_fft130)
+
+add_library (
+    BTrack STATIC
+    BTrack.cpp
+    BTrack.h
+    OnsetDetectionFunction.cpp
+    OnsetDetectionFunction.h
+    CircularBuffer.h
+)
+
+source_group (Source src)
+
+target_compile_definitions (BTrack PUBLIC -DUSE_KISS_FFT)
+
+# Link against libsamplerate
+#target_link_libraries(BTrack PRIVATE ${LIBSAMPLERATE_LIBRARIES})
