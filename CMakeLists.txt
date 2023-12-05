@@ -12,7 +12,6 @@ add_subdirectory(3rd-party/BTrack btrack)
 include_directories(3rd-party/libsamplerate/include)
 include_directories(3rd-party/libsamplerate/src)
 include_directories(3rd-party/BTrack/libs/kiss_fft130)
-include_directories(3rd-party/BTrack/src)
 add_library(kiss_fft
         3rd-party/BTrack/libs/kiss_fft130/_kiss_fft_guts.h
         3rd-party/BTrack/libs/kiss_fft130/kiss_fft.c
@@ -30,6 +29,7 @@ add_library(libsamplerate
         3rd-party/libsamplerate/src/src_zoh.c
         3rd-party/libsamplerate/include/samplerate.h
 )
+include_directories(3rd-party/BTrack/src)
 
 # JUCE
 add_subdirectory($ENV{JUCE_PATH} juce)
@@ -54,14 +54,19 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_VERSION>")
 
-target_link_libraries(${PROJECT_NAME}
-        PRIVATE
+target_link_libraries(BTrack INTERFACE
         libsamplerate
         kiss_fft
-        BTrack
+)
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
         juce::juce_audio_utils
         juce::juce_gui_extra
         PUBLIC
+        libsamplerate
+        kiss_fft
+        BTrack
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags)
